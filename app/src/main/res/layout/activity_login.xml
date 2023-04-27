@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainLayout"
@@ -12,7 +12,7 @@
     <LinearLayout
         android:id="@+id/loginLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="@android:dimen/app_icon_size"
         app:layout_constraintEnd_toEndOf="parent"
@@ -62,13 +62,36 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/loginEmailTextInput" />
 
-        <CheckBox
-            android:id="@+id/passwordCheckBox"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:text="@string/show_password"
-            android:textColor="@color/black" />
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/forgotPasswordText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#0060ff"
+                android:text="@string/forgot_password" />
+
+
+            <TextView
+                android:id="@+id/spacingTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                android:text="@string/textview"
+                tools:ignore="InefficientWeight" />
+
+            <CheckBox
+                android:id="@+id/passwordCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/show_password"
+                android:textColor="@color/black" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/additionalMessageTextView"
@@ -86,17 +109,18 @@
             android:id="@+id/loginButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:background="@drawable/login_button"
             android:text="@string/loginButton"
             android:textAlignment="center"
-            android:layout_gravity="center"
             android:textColor="@color/white"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/additionalMessage"
-            app:layout_constraintTop_toBottomOf="@+id/loginPasswordTextInput" />
+            app:layout_constraintTop_toBottomOf="@+id/loginPasswordTextInput"
+            tools:ignore="TextContrastCheck" />
 
         <Button
             android:id="@+id/registerButton"
@@ -118,12 +142,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
 
-    </LinearLayout>
 
+    </LinearLayout>
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:contentDescription="@string/sports_field_image"
         android:cropToPadding="true"
@@ -132,6 +156,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/sports_field_background" />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

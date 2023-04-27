@@ -20,4 +20,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="home_fragment">Home fragment</string>
     <string name="show_password">Show password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="textview">TextView</string>
 </resources>
