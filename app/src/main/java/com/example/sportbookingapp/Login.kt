@@ -56,6 +56,11 @@ class Login : AppCompatActivity() {
             this@Login.startActivity(registerActivity)
         }
 
+        val forgotPasswordButton = findViewById<TextView>(R.id.forgotPasswordText)
+        forgotPasswordButton.setOnClickListener {
+
+        }
+
         val checkBox = findViewById<CheckBox>(R.id.passwordCheckBox)
         checkBox.setOnCheckedChangeListener { _, isChecked ->
 
