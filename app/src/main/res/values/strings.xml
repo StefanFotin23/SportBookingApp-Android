@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">SportBookingApp</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Welcome to SportBooking!</string>
+    <string name="sports_field_image">sports field image</string>
+    <string name="register">Register</string>
+    <string name="email_or_password_is_incorrect">Email or password is incorrect!</string>
+    <string name="don_t_have_an_account_yet">Don\'t have an account yet?</string>
+    <string name="loginButton">Login</string>
+    <string name="full_name">Full Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="username">Username</string>
+    <string name="back">Back</string>
+    <string name="shared_preferences">SharedPreferences</string>
+    <string name="home">Home</string>
+    <string name="reservation_status">Reservation status</string>
+    <string name="profile">Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home_fragment">Home fragment</string>
+    <string name="show_password">Show password</string>
+</resources>
