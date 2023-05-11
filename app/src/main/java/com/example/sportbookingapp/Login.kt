@@ -58,7 +58,8 @@ class Login : AppCompatActivity() {
 
         val forgotPasswordButton = findViewById<TextView>(R.id.forgotPasswordText)
         forgotPasswordButton.setOnClickListener {
-
+            val forgotPasswordActivity = Intent(this@Login, ForgotPasswordActivity::class.java)
+            this@Login.startActivity(forgotPasswordActivity)
         }
 
         val checkBox = findViewById<CheckBox>(R.id.passwordCheckBox)
