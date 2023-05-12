@@ -29,6 +29,7 @@
             android:gravity="center"
             />
         <TextView
+            android:id="@+id/logout_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Logout"
@@ -36,6 +37,7 @@
             android:textStyle="bold"
             android:textSize="15dp"
             />
+
     </LinearLayout>
 
     <View
