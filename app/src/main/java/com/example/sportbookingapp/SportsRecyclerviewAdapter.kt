@@ -15,6 +15,14 @@ class SportsRecyclerviewAdapter(private val sportsList: ArrayList<Sports>):
 
     private var selectedPosition = -1 // no image is selected
 
+    fun getSelectedPosition(): Int {
+        return selectedPosition
+    }
+
+    fun setSelectedPosition(pos: Int) {
+        selectedPosition = pos
+    }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
