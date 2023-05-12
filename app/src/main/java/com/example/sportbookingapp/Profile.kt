@@ -1,5 +1,6 @@
 package com.example.sportbookingapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,7 +8,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,6 +40,16 @@ class Profile : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
+
+        val logoutTextView = view.findViewById<TextView>(R.id.logout_textView)
+        logoutTextView.setOnClickListener {
+            FirebaseAuth.getInstance().signOut() // clear the user session
+            val loginIntent = Intent(context, Login::class.java)
+            startActivity(loginIntent) // redirect the user to the login page
+           // finish() // close the current activity
+
+        }
+
 
         val emailEditText = view.findViewById<TextInputEditText>(R.id.email_textinputedittext)
         emailEditText.setText("example@example.com")
