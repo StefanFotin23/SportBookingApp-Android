@@ -12,8 +12,10 @@
         android:id="@+id/sportsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:scrollbars="horizontal"
-        android:orientation="horizontal"/>
+        android:orientation="horizontal"
+        tools:listitem="@layout/sports_recycler_view_item"/>
 
     <CalendarView
         android:id="@+id/calendarView"
