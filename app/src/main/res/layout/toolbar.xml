@@ -16,8 +16,7 @@
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/mickey"
-            android:layout_alignParantLeft="true" />
+            android:src="@drawable/mickey"/>
 
         <TextView
             android:layout_weight="1"
@@ -35,7 +34,6 @@
             android:text="Logout"
             android:textColor="@android:color/black"
             android:textStyle="bold"
-            android:layout_alignParentRight="true"
             android:textSize="15dp"
             />
     </LinearLayout>

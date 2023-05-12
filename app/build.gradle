@@ -13,7 +13,10 @@ android {
         targetSdk 32
         versionCode 1
         versionName "1.0"
-
+        useLibrary 'androidx.core'
+        useLibrary 'androidx.appcompat'
+        useLibrary 'androidx.recyclerview'
+        useLibrary 'androidx.cardview'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
