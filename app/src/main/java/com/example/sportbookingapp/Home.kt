@@ -1,5 +1,6 @@
 package com.example.sportbookingapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -45,6 +46,21 @@ class Home : Fragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("selectedPosition", adapter.getSelectedPosition())
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        savedInstanceState?.let {
+            adapter.setSelectedPosition(it.getInt("selectedPosition", -1))
+            adapter.notifyDataSetChanged()
+        }
+    }
+
 
     companion object {
         /**
