@@ -1,10 +1,16 @@
 package com.example.sportbookingapp
 
+import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -20,7 +26,6 @@ class Profile : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -34,7 +39,83 @@ class Profile : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        val view = inflater.inflate(R.layout.fragment_profile, container, false)
+
+        val logoutTextView = view.findViewById<TextView>(R.id.logout_textView)
+        logoutTextView.setOnClickListener {
+            FirebaseAuth.getInstance().signOut() // clear the user session
+            val loginIntent = Intent(context, Login::class.java)
+            startActivity(loginIntent) // redirect the user to the login page
+           // finish() // close the current activity
+
+        }
+
+
+        val emailEditText = view.findViewById<TextInputEditText>(R.id.email_textinputedittext)
+        emailEditText.setText("example@example.com")
+        emailEditText.setOnClickListener {
+            emailEditText.setText("")
+        }
+        emailEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                val newEmail = s.toString()
+                // save new email to database or file
+            }
+        })
+
+        val firstNameEditText = view.findViewById<TextInputEditText>(R.id.firstname_textview)
+        firstNameEditText.setText("John")
+        firstNameEditText.setOnClickListener {
+            firstNameEditText.setText("")
+        }
+        firstNameEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                val newFirstName = s.toString()
+                // save new first name to database or file
+            }
+        })
+
+        val lastNameEditText = view.findViewById<TextInputEditText>(R.id.secondname_textview)
+        lastNameEditText.setText("Doe")
+        lastNameEditText.setOnClickListener {
+            lastNameEditText.setText("")
+        }
+        lastNameEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                val newLastName = s.toString()
+                // save new last name to database or file
+            }
+        })
+
+        val phoneNumberEditText = view.findViewById<TextInputEditText>(R.id.phone_number_textview)
+        phoneNumberEditText.setText("1234567890")
+        phoneNumberEditText.setOnClickListener {
+            phoneNumberEditText.setText("")
+        }
+        phoneNumberEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                val newPhoneNumber = s.toString()
+                // save new phone number to database or file
+            }
+        })
+
+        return view
     }
 
     companion object {
