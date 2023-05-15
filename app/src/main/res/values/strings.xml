@@ -16,11 +16,17 @@
     <string name="home">Home</string>
     <string name="reservation_status">Reservation status</string>
     <string name="profile">Profile</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="home_fragment">Home fragment</string>
     <string name="show_password">Show password</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="textview">TextView</string>
     <string name="personal_data">Personal Data</string>
+    <string name="confirm">Confirm</string>
+    <string name="please_insert_your_email">Please insert your email</string>
+    <string name="football">Football</string>
+    <string name="basketball">Basketball</string>
+    <string name="tennis">Tennis</string>
+    <string name="volleyball">Volleyball</string>
+    <string name="soccer_field_image">soccer_field_image</string>
 </resources>
