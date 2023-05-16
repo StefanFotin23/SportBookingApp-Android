@@ -29,4 +29,9 @@
     <string name="tennis">Tennis</string>
     <string name="volleyball">Volleyball</string>
     <string name="soccer_field_image">soccer_field_image</string>
+    <string name="spinner_prompt_text">Select an hour</string>
+    <string name="starting_hour">Starting hour</string>
+    <string name="ending_hour">Ending hour</string>
+    <string name="total_price">Total price: </string>
+    <string name="price_text">Price: %1$s lei</string>
 </resources>

@@ -13,9 +13,7 @@ import com.google.firebase.auth.FirebaseUser
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    override fun onBackPressed() {
-
-    }
+    override fun onBackPressed() {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         replaceFragment(Home())
 
         val uid = intent.getStringExtra("uid")
-        val sharedPreference =  getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE)
+        val sharedPreference = getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE)
         val editor = sharedPreference.edit()
         editor.putString("username", intent.getStringExtra("email"))
         editor.commit()
