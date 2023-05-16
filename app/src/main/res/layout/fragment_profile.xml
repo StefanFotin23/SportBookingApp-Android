@@ -6,20 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="@android:dimen/app_icon_size"
     tools:context=".Profile">
-
-
-    <include
-        layout="@layout/toolbar"
-        />
+    <include layout="@layout/toolbar"/>
 
     <LinearLayout
-
         android:layout_width="match_parent"
         android:layout_height="425dp"
         android:gravity="center"
-        android:orientation="vertical"
-        android:paddingTop="15dp">
+        android:orientation="vertical">
 
         <ImageView
             android:layout_width="90dp"
@@ -33,12 +28,6 @@
             android:text="Mickey Mouse"
             android:textSize="20dp"
             android:textStyle="bold" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="9dp"
-            android:layout_marginTop="10dp"
-            android:background="#FF000000" />
 
         <LinearLayout
             android:layout_width="match_parent"
