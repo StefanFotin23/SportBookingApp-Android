@@ -288,17 +288,17 @@ class Home : Fragment() {
             .addOnSuccessListener { result ->
                 Log.d("fetch", "FETCH_RESULT : " + result.documents + "\n")
                 for (document in result.documents) {
-                    val id = document.getString("id")
+                    val nr = document.getString("nr")
                     val name = document.getString("name")
                     val imageUrl = document.getString("imageUrl")
                     val sportCategory = document.getString("sportCategory")
                     val price = document.getString("price").toString().toInt()
                     val description = document.getString("description")
 
-                    if (id != null && name != null && imageUrl != null && sportCategory != null &&
+                    if (nr != null && name != null && imageUrl != null && sportCategory != null &&
                         description != null) {
                         val sportField =
-                            SportField(id, name, imageUrl, sportCategory, price, description)
+                            SportField(nr, name, imageUrl, sportCategory, price, description)
                         sportFields.add(sportField)
                     }
                 }
