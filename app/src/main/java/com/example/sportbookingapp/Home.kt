@@ -17,8 +17,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.abs
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -55,10 +60,12 @@ class Home : Fragment() {
     private lateinit var startingHourSpinner: Spinner
     private lateinit var endingHourSpinner: Spinner
     private lateinit var endingHourText: TextView
+    private lateinit var endingDataWithHint: ArrayList<String>
+    private lateinit var startingDataWithHint: ArrayList<String>
 
     // Lists that populate the choices in the SpinnerView
-    private lateinit var availableStartingHoursList: List<String>
-    private lateinit var availableEndingHoursList: List<String>
+    private var availableStartingHoursList = ArrayList<String>()
+    private var availableEndingHoursList = ArrayList<String>()
 
     private var startingHour = 0
     private var endingHour = 0
@@ -76,6 +83,8 @@ class Home : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        availableStartingHoursList.add(hint)
+        availableEndingHoursList.add(hint)
     }
 
     override fun onCreateView(
@@ -111,10 +120,9 @@ class Home : Fragment() {
         val sharedPref = requireActivity()
             .getSharedPreferences("HomeFragment", Context.MODE_PRIVATE)
         adapter.setSelectedPosition(sharedPref.getInt("selectedPosition", -1))
-
-        // SpinnerView - Starting & Ending hour
-        fetchAvailableReservationHours()
-        startingReservationHoursInit(availableStartingHoursList)
+        // fetch data from firebase
+        fetchDataFromDB()
+        startingReservationHoursInit()
     }
 
     override fun onPause() {
@@ -134,7 +142,6 @@ class Home : Fragment() {
         firebaseAuth = FirebaseAuth.getInstance()
         uid = firebaseAuth.currentUser?.uid.toString()
         db = Firebase.firestore
-        fetchDataFromDB()
 
         // Recyclerview
         val layoutManager = LinearLayoutManager(context)
@@ -183,12 +190,11 @@ class Home : Fragment() {
         }
     }
 
-    private fun startingReservationHoursInit(availableStartingHoursList: List<String>) {
+    private fun startingReservationHoursInit() {
         // Add a hint or prompt to the availableStartingHoursList
-        val dataWithHint = listOf(hint) + availableStartingHoursList
         val startingHourAdapter = ArrayAdapter(
             requireContext(), android.R.layout.simple_spinner_dropdown_item,
-            dataWithHint
+            availableStartingHoursList
         )
         startingHourAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         startingHourSpinner.adapter = startingHourAdapter
@@ -204,13 +210,14 @@ class Home : Fragment() {
                 val selectedItem = parent.getItemAtPosition(position)
                 if (selectedItem is String && selectedItem != hint) {
                     startingHour = selectedItem.toInt()
-                    endingReservationHoursInit(availableEndingHoursList)
+                    endingReservationHoursInit()
                 } else if (selectedItem is String && selectedItem == hint) {
                     endingHourSpinner.visibility = View.INVISIBLE
                     endingHourText.visibility = View.INVISIBLE
                     startingHour = -1
                 }
             }
+
             override fun onNothingSelected(parent: AdapterView<*>) {
                 endingHourSpinner.visibility = View.INVISIBLE
                 endingHourText.visibility = View.INVISIBLE
@@ -218,13 +225,10 @@ class Home : Fragment() {
         }
     }
 
-    private fun endingReservationHoursInit(
-        availableEndingHoursList: List<String>
-    ) {
-        val dataWithHint = listOf(hint) + availableEndingHoursList
+    private fun endingReservationHoursInit() {
         val endingHourAdapter = ArrayAdapter(
             requireContext(), android.R.layout.simple_spinner_dropdown_item,
-            dataWithHint
+            availableEndingHoursList
         )
         endingHourAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         endingHourSpinner.adapter = endingHourAdapter
@@ -256,6 +260,7 @@ class Home : Fragment() {
                     makeReservationButton.visibility = View.INVISIBLE
                 }
             }
+
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Do nothing
             }
@@ -263,18 +268,25 @@ class Home : Fragment() {
     }
 
     private fun calculateTotalPrice(price: Int): Int {
-        return price * (endingHour - startingHour)
+        return price * abs(endingHour - startingHour)
     }
 
-    private fun fetchDataFromDB(){
-        fetchSportFieldsFromDB()
-        fetchAvailableReservationHours()
+    @OptIn(DelicateCoroutinesApi::class)
+    fun fetchDataFromDB() {
+        GlobalScope.launch(Dispatchers.IO) {
+            fetchSportFieldsFromDB()
+        }
+        GlobalScope.launch(Dispatchers.IO) {
+            fetchAvailableReservationHours()
+        }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun fetchSportFieldsFromDB() {
         db.collection("fields")
             .get()
             .addOnSuccessListener { result ->
+                Log.d("fetch", "FETCH_RESULT : " + result.documents + "\n")
                 for (document in result.documents) {
                     val id = document.getString("id")
                     val name = document.getString("name")
@@ -283,20 +295,34 @@ class Home : Fragment() {
                     val price = document.getString("price").toString().toInt()
                     val description = document.getString("description")
 
-                    if (id != null && name != null && imageUrl != null && sportCategory != null && price != null && description != null) {
-                        val sportField = SportField(id, name, imageUrl, sportCategory, price, description)
+                    if (id != null && name != null && imageUrl != null && sportCategory != null &&
+                        description != null) {
+                        val sportField =
+                            SportField(id, name, imageUrl, sportCategory, price, description)
                         sportFields.add(sportField)
                     }
                 }
+                Log.d("fetch", "SportFields (after fetch): " + sportFields + "\n")
+                adapter.notifyDataSetChanged()
+                Log.d("fetch", "DataSetChanged\n")
             }
             .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting sport fields data from Firestore.", exception)
+                Log.d("fetch", "Error getting sport fields data from Firestore.", exception)
             }
     }
 
     private fun fetchAvailableReservationHours() {
-        availableStartingHoursList = listOf("1", "2", "3", "4")
-        availableEndingHoursList = listOf("5", "6", "7", "8")
-        // momentan hardcodat, mai necesita logica backend
+        val start = ArrayList<String>()
+        val end = ArrayList<String>()
+
+        //hardcoded variant
+        for (i in 8..22) {
+            start.add(i.toString())
+            end.add(i.toString())
+        }
+
+        // update the hours for spinners
+        availableStartingHoursList += start
+        availableEndingHoursList += end
     }
 }

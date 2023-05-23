@@ -1,7 +1,9 @@
 package com.example.sportbookingapp
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sportbookingapp.backend_classes.SportField
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 
 class SportsRecyclerviewAdapter(private val sportsFieldsList: ArrayList<SportField>):
@@ -37,8 +40,18 @@ class SportsRecyclerviewAdapter(private val sportsFieldsList: ArrayList<SportFie
     override fun onBindViewHolder(holder: SportsRecyclerviewViewHolder,
                                   @SuppressLint("RecyclerView") position: Int) {
         val currentItem = sportsFieldsList[position]
-        Picasso.get().load(currentItem.getImageUrl()).into(holder.sportImage)
-        holder.sportName.text = currentItem.getName()
+        Picasso.get()
+            .load(currentItem.getImageUrl())
+            .error(R.drawable.sports_field_background) // Replace with your error placeholder image
+            .into(holder.sportImage, object : Callback {
+                override fun onSuccess() {
+                    // Image loaded successfully
+                }
+                override fun onError(e: Exception?) {
+                    Log.e(TAG, "Error loading image from URL: ${currentItem.getImageUrl()}", e)
+                }
+            })
+        holder.sportName.text = currentItem.getSportCategory()
 
         if (position == selectedPosition) {
             holder.itemView.findViewById<RelativeLayout>(R.id.sportsRecyclerviewLayout)

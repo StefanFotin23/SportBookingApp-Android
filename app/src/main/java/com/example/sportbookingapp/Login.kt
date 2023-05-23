@@ -106,6 +106,7 @@ class Login : AppCompatActivity() {
                             mainActivity.putExtra("uid", user.uid)
                             mainActivity.putExtra("email", email)
                         }
+                        findViewById<TextInputEditText>(R.id.loginPasswordTextInput).setText("")
                         this@Login.startActivity(mainActivity)
                     } else {
                         // If sign in fails, display a message to the user.
