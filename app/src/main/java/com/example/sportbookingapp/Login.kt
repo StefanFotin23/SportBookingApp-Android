@@ -38,21 +38,6 @@ class Login : AppCompatActivity() {
         val registerButton = findViewById<Button>(R.id.registerButton)
         registerButton.setOnClickListener {
             val registerActivity = Intent(this@Login, Registration::class.java)
-            // get data from Registration intent, if we clicked "Back"
-            if (intent != null) {
-                val email = intent.getStringExtra("email")
-                val password = intent.getStringExtra("password")
-                val username = intent.getStringExtra("userName")
-                val fullName = intent.getStringExtra("fullName")
-                val phoneNumber = intent.getStringExtra("phoneNumber")
-
-                // send data to the Registration Activity
-                registerActivity.putExtra("email", email)
-                registerActivity.putExtra("password", password)
-                registerActivity.putExtra("username", username)
-                registerActivity.putExtra("fullName", fullName)
-                registerActivity.putExtra("phoneNumber", phoneNumber)
-            }
             this@Login.startActivity(registerActivity)
         }
 

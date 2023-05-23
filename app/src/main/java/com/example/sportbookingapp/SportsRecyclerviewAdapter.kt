@@ -9,8 +9,10 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.sportbookingapp.backend_classes.SportField
+import com.squareup.picasso.Picasso
 
-class SportsRecyclerviewAdapter(private val sportsList: ArrayList<Sports>):
+class SportsRecyclerviewAdapter(private val sportsFieldsList: ArrayList<SportField>):
     RecyclerView.Adapter<SportsRecyclerviewAdapter.SportsRecyclerviewViewHolder>() {
 
     private var selectedPosition = -1 // no image is selected
@@ -34,9 +36,9 @@ class SportsRecyclerviewAdapter(private val sportsList: ArrayList<Sports>):
 
     override fun onBindViewHolder(holder: SportsRecyclerviewViewHolder,
                                   @SuppressLint("RecyclerView") position: Int) {
-        val currentItem = sportsList[position]
-        holder.sportImage.setImageResource(currentItem.sportImage)
-        holder.sportName.text = currentItem.sportName
+        val currentItem = sportsFieldsList[position]
+        Picasso.get().load(currentItem.getImageUrl()).into(holder.sportImage)
+        holder.sportName.text = currentItem.getName()
 
         if (position == selectedPosition) {
             holder.itemView.findViewById<RelativeLayout>(R.id.sportsRecyclerviewLayout)
@@ -60,7 +62,7 @@ class SportsRecyclerviewAdapter(private val sportsList: ArrayList<Sports>):
     }
 
     override fun getItemCount(): Int {
-        return sportsList.size
+        return sportsFieldsList.size
     }
 
     class SportsRecyclerviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
