@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sportbookingapp.backend_classes.SportField
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -123,6 +124,36 @@ class Home : Fragment() {
         // fetch data from firebase
         fetchDataFromDB()
         startingReservationHoursInit()
+
+        makeReservationButton.setOnClickListener {
+            // Send the request to Firebase
+            val emailPreferences =
+                requireActivity().getSharedPreferences("userEmail", Context.MODE_PRIVATE)
+            val email = emailPreferences.getString("userEmail", "guest")
+
+            val reservation = hashMapOf(
+                "startingHour" to startingHour,
+                "endingHour" to endingHour,
+                "field_id" to sportFields[adapter.getSelectedPosition()].getId(),
+                "date" to selectedDate,
+                "booker" to email,
+                "price" to totalPrice
+            )
+
+            db.collection("reservations")
+                .add(reservation)
+                .addOnSuccessListener { documentReference ->
+                    // Reservation added successfully
+                    val reservationId = documentReference.id
+                    Toast.makeText(context, "RequestData added successfully", Toast.LENGTH_SHORT)
+                        .show();
+                    //ar trebui sa deselectez tot acum
+                }
+                .addOnFailureListener { exception ->
+                    // Error occurred while adding user
+                    Log.e(TAG, "Error adding reservationData to Firestore", exception)
+                }
+        }
     }
 
     override fun onPause() {
@@ -185,9 +216,6 @@ class Home : Fragment() {
 
         // Make Reservation Button
         makeReservationButton = view.findViewById(R.id.confirm_reservation_button)
-        makeReservationButton.setOnClickListener {
-            // Confirm the Request and send it to Firebase
-        }
     }
 
     private fun startingReservationHoursInit() {
@@ -288,17 +316,16 @@ class Home : Fragment() {
             .addOnSuccessListener { result ->
                 Log.d("fetch", "FETCH_RESULT : " + result.documents + "\n")
                 for (document in result.documents) {
-                    val nr = document.getString("nr")
+                    val id = document.id
                     val name = document.getString("name")
                     val imageUrl = document.getString("imageUrl")
                     val sportCategory = document.getString("sportCategory")
                     val price = document.getString("price").toString().toInt()
                     val description = document.getString("description")
 
-                    if (nr != null && name != null && imageUrl != null && sportCategory != null &&
-                        description != null) {
+                    if (name != null && imageUrl != null && sportCategory != null && description != null) {
                         val sportField =
-                            SportField(nr, name, imageUrl, sportCategory, price, description)
+                            SportField(id, name, imageUrl, sportCategory, price, description)
                         sportFields.add(sportField)
                     }
                 }
