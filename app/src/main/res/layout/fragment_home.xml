@@ -37,6 +37,7 @@
             android:minHeight="48dip"
             android:minWidth="192dip"
             android:textColor="@color/black"
+            android:visibility="invisible"
             android:text="@string/starting_hour"/>
 
         <Spinner
@@ -45,6 +46,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/starting_hour"
             android:minHeight="48dip"
+            android:visibility="invisible"
             android:prompt="@string/spinner_prompt_text"
             tools:ignore="DuplicateSpeakableTextCheck" />
     </LinearLayout>
