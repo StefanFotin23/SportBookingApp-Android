@@ -140,7 +140,8 @@ class Home : Fragment() {
                 "field_id" to sportFields[adapter.getSelectedPosition()].getId(),
                 "date" to selectedDate,
                 "booker" to email,
-                "price" to totalPrice
+                "price" to totalPrice,
+                "status" to "pending"
             )
 
             db.collection("reservations")
