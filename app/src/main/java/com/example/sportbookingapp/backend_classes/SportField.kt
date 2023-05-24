@@ -1,7 +1,7 @@
 package com.example.sportbookingapp.backend_classes
 
 class SportField(
-    private var nr: String,
+    private var id: String,
     private var name: String,
     private var imageUrl: String,
     private var sportCategory: String,
@@ -9,8 +9,8 @@ class SportField(
     private var description: String
 ) {
     // Getters
-    public fun getNr(): String {
-        return nr
+    public fun getId(): String {
+        return id
     }
     public fun getName(): String {
         return name
@@ -28,8 +28,8 @@ class SportField(
         return description
     }
     // Setters
-    public fun setNr(id: String) {
-        this.nr = nr
+    public fun setId(id: String) {
+        this.id = id
     }
     public fun setName(name: String) {
         this.name = name
