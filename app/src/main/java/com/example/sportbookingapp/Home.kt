@@ -61,8 +61,7 @@ class Home : Fragment() {
     private lateinit var startingHourSpinner: Spinner
     private lateinit var endingHourSpinner: Spinner
     private lateinit var endingHourText: TextView
-    private lateinit var endingDataWithHint: ArrayList<String>
-    private lateinit var startingDataWithHint: ArrayList<String>
+    private lateinit var startingHourText: TextView
 
     // Lists that populate the choices in the SpinnerView
     private var availableStartingHoursList = ArrayList<String>()
@@ -116,6 +115,7 @@ class Home : Fragment() {
             }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
         val sharedPref = requireActivity()
@@ -123,8 +123,11 @@ class Home : Fragment() {
         adapter.setSelectedPosition(sharedPref.getInt("selectedPosition", -1))
         // fetch data from firebase
         fetchDataFromDB()
-        startingReservationHoursInit()
+        if (fieldPosition != -1) {
+            startingReservationHoursInit()
+        }
 
+        // Make Reservations data upload to Firebase
         makeReservationButton.setOnClickListener {
             // Send the request to Firebase
             val emailPreferences =
@@ -181,6 +184,11 @@ class Home : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.setHasFixedSize(true)
         adapter = SportsRecyclerviewAdapter(sportFields)
+        adapter.setOnItemClickListener(object : SportsRecyclerviewAdapter.OnItemClickListener {
+            override fun onItemClick(position: Int) {
+                startingReservationHoursInit()
+            }
+        })
         recyclerView.adapter = adapter
 
         // Initialize CalendarView
@@ -212,6 +220,7 @@ class Home : Fragment() {
         startingHourSpinner = view.findViewById(R.id.startingHourSpinner)
         endingHourSpinner = view.findViewById(R.id.endingHourSpinner)
         endingHourText = view.findViewById(R.id.endingHourTextView)
+        startingHourText = view.findViewById(R.id.startingHourTextView)
         priceTextView = view.findViewById(R.id.priceText)
 
         // Make Reservation Button
@@ -226,6 +235,8 @@ class Home : Fragment() {
         )
         startingHourAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         startingHourSpinner.adapter = startingHourAdapter
+        startingHourSpinner.visibility = View.VISIBLE
+        startingHourText.visibility = View.VISIBLE
 
         // onItemSelected Listener
         startingHourSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {

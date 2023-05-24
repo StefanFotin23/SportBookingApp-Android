@@ -18,6 +18,7 @@ import com.squareup.picasso.Picasso
 class SportsRecyclerviewAdapter(private val sportsFieldsList: ArrayList<SportField>):
     RecyclerView.Adapter<SportsRecyclerviewAdapter.SportsRecyclerviewViewHolder>() {
 
+    private var itemClickListener: OnItemClickListener? = null
     private var selectedPosition = -1 // no image is selected
 
     fun getSelectedPosition(): Int {
@@ -71,11 +72,20 @@ class SportsRecyclerviewAdapter(private val sportsFieldsList: ArrayList<SportFie
                 selectedPosition = position
                 notifyItemChanged(selectedPosition)
             }
+            itemClickListener?.onItemClick(position)
         }
     }
 
     override fun getItemCount(): Int {
         return sportsFieldsList.size
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(position: Int)
+    }
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        itemClickListener = listener
     }
 
     class SportsRecyclerviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
