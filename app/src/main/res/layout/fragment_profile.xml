@@ -52,14 +52,14 @@
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/firstname_textview"
+            <EditText
+                android:id="@+id/firstNameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
-                android:text="Mickey"
                 android:textColor="#000000"
                 android:textSize="18dp" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -85,12 +85,11 @@
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/secondname_textview"
+            <EditText
+                android:id="@+id/lastNameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
-                android:text="Mickey"
                 android:textColor="#000000"
                 android:textSize="18dp" />
         </LinearLayout>
@@ -117,15 +116,14 @@
                 android:textColor="#FF000000"
                 android:textSize="20dp"
                 android:textStyle="bold" />
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/email_textinputedittext"
+            <EditText
+                android:id="@+id/emailEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:text="example@example.com"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:layout_marginLeft="25dp"
+                android:textColor="#000000"
+                android:textSize="18dp"
+                android:inputType="textEmailAddress" />
 
         </LinearLayout>
     </LinearLayout>
@@ -153,15 +151,20 @@
             android:textSize="20dp"
             android:textStyle="bold" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/phone_number_textview"
+        <EditText
+            android:id="@+id/phoneNumberEditText"
             android:layout_width="126dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="25dp"
-            android:text="0723 145 667"
             android:textColor="#000000"
             android:textSize="18dp" />
     </LinearLayout>
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:layout_marginTop="16dp" />
 </LinearLayout>
 
 
