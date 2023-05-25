@@ -80,29 +80,21 @@ class Profile : Fragment() {
             val lastName = view.findViewById<TextView>(R.id.lastNameEditText).text.toString()
             val phoneNumber = view.findViewById<TextView>(R.id.phoneNumberEditText).text.toString()
 
-            // Create a new user document with the profile data
-            val user = HashMap<String, Any>()
-            user["email"] = email
-            user["firstName"] = firstName
-            user["lastName"] = lastName
-            user["phoneNumber"] = phoneNumber
-
-            // Add the user document to the "users" collection and let Firebase generate a unique ID
-            db.collection("users")
-                .add(user)
-                .addOnSuccessListener { documentReference ->
-                    // User document added successfully
-                    val userId = documentReference.id
-                    Log.d(TAG, "User document added with ID: $userId")
-
-                    // Perform any additional operations here
+            // Find the user document with the matching email
+            val userQuery = db.collection("users").whereEqualTo("email", email)
+            userQuery.get().addOnSuccessListener { documents ->
+                // There should only be one document matching the query
+                if (documents.size() == 1) {
+                    val userDoc = documents.documents[0]
+                    // Update the existing user document with the new field values
+                    userDoc.reference.update("firstName", firstName)
+                    userDoc.reference.update("lastName", lastName)
+                    userDoc.reference.update("phoneNumber", phoneNumber)
+                } else {
+                    // Handle the case where no user document was found or multiple documents were found
                 }
-                .addOnFailureListener { exception ->
-                    // Error occurred while adding user document
-                    Log.e(TAG, "Error adding user document: ${exception.message}")
-                }
+            }
         }
-
         return view
     }
 }
