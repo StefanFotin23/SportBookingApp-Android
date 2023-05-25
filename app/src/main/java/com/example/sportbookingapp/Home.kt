@@ -3,6 +3,8 @@ package com.example.sportbookingapp
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Typeface
 import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
@@ -232,6 +234,14 @@ class Home : Fragment() {
     }
 
     private fun startingReservationHoursInit() {
+        // Show the description of the selected field
+        var fieldDescription = "Selected field description:\n"
+        fieldDescription += sportFields[adapter.getSelectedPosition()].getDescription()
+        priceTextView.setTextColor(Color.parseColor("#66F9B0"))
+        priceTextView.setTypeface(null, Typeface.BOLD);
+        priceTextView.text = fieldDescription
+        priceTextView.visibility = View.VISIBLE
+
         // Add a hint or prompt to the availableStartingHoursList
         val startingHourAdapter = ArrayAdapter(
             requireContext(), android.R.layout.simple_spinner_dropdown_item,
