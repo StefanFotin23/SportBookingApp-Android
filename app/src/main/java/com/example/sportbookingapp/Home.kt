@@ -3,6 +3,7 @@ package com.example.sportbookingapp
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -149,9 +150,10 @@ class Home : Fragment() {
                 .addOnSuccessListener { documentReference ->
                     // Reservation added successfully
                     val reservationId = documentReference.id
-                    Toast.makeText(context, "RequestData added successfully", Toast.LENGTH_SHORT)
-                        .show();
-                    //ar trebui sa deselectez tot acum
+                    Toast.makeText(context, "RequestData added successfully", Toast.LENGTH_LONG)
+                        .show()
+                    priceTextView.visibility = View.INVISIBLE
+                    startingReservationHoursInit()
                 }
                 .addOnFailureListener { exception ->
                     // Error occurred while adding user
@@ -187,7 +189,8 @@ class Home : Fragment() {
         adapter = SportsRecyclerviewAdapter(sportFields)
         adapter.setOnItemClickListener(object : SportsRecyclerviewAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                startingReservationHoursInit()
+                priceTextView.visibility = View.INVISIBLE
+                startingReservationHoursInit() // it resets the spinner's view
             }
         })
         recyclerView.adapter = adapter
@@ -341,9 +344,7 @@ class Home : Fragment() {
                         sportFields.add(sportField)
                     }
                 }
-                Log.d("fetch", "SportFields (after fetch): " + sportFields + "\n")
                 adapter.notifyDataSetChanged()
-                Log.d("fetch", "DataSetChanged\n")
             }
             .addOnFailureListener { exception ->
                 Log.d("fetch", "Error getting sport fields data from Firestore.", exception)
