@@ -1,17 +1,24 @@
 package com.example.sportbookingapp
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,31 +31,12 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class Profile : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-    private fun saveProfileData(firstName: String, lastName: String, email: String, phoneNumber: String) {
-        val sharedPreferences = requireContext().getSharedPreferences("ProfileData", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("FirstName", firstName)
-        editor.putString("LastName", lastName)
-        editor.putString("Email", email)
-        editor.putString("PhoneNumber", phoneNumber)
-        editor.apply()
-    }
+    private var db = Firebase.firestore
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
         val logoutTextView = view.findViewById<TextView>(R.id.logout_textView)
@@ -56,96 +44,57 @@ class Profile : Fragment() {
             FirebaseAuth.getInstance().signOut() // clear the user session
             val loginIntent = Intent(context, Login::class.java)
             startActivity(loginIntent) // redirect the user to the login page
-           // finish() // close the current activity
-
-        }
-        val phoneNumberEditText = view.findViewById<TextInputEditText>(R.id.phone_number_textview)
-        phoneNumberEditText.setText("1234567890")
-        phoneNumberEditText.setOnClickListener {
-            phoneNumberEditText.setText("")
+            // finish() // close the current activity
         }
 
-        val emailEditText = view.findViewById<TextInputEditText>(R.id.email_textinputedittext)
-        emailEditText.setText("example@example.com")
-        emailEditText.setOnClickListener {
-            emailEditText.setText("")
-        }
-        val firstNameEditText = view.findViewById<TextInputEditText>(R.id.firstname_textview)
-        firstNameEditText.setText("John")
-        firstNameEditText.setOnClickListener {
-            firstNameEditText.setText("")
-        }
-        val lastNameEditText = view.findViewById<TextInputEditText>(R.id.secondname_textview)
-        lastNameEditText.setText("Doe")
-        lastNameEditText.setOnClickListener {
-            lastNameEditText.setText("")
-        }
-        emailEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        db.collection("users")
+            .get()
+            .addOnSuccessListener { result ->
+                Log.d("fetch", "FETCH_RESULT : " + result.documents + "\n")
+                for (document in result.documents) {
+                    val email = document.getString("email")
+                    val firstName = document.getString("firstName")
+                    val lastName = document.getString("lastName")
+                    val phoneNumber = document.getString("phoneNumber")
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
-                val newEmail = s.toString()
-                saveProfileData(firstNameEditText.text.toString(), lastNameEditText.text.toString(), newEmail, phoneNumberEditText.text.toString())
-            }
-        })
-
-
-        firstNameEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
-                val newFirstName = s.toString()
-                saveProfileData(newFirstName, lastNameEditText.text.toString(), emailEditText.text.toString(), phoneNumberEditText.text.toString())
-            }
-        })
-
-
-        lastNameEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
-                val newLastName = s.toString()
-                saveProfileData(firstNameEditText.text.toString(), newLastName, emailEditText.text.toString(), phoneNumberEditText.text.toString())
-            }
-        })
-
-        phoneNumberEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
-                val newPhoneNumber = s.toString()
-                saveProfileData(firstNameEditText.text.toString(), lastNameEditText.text.toString(), emailEditText.text.toString(), newPhoneNumber)
-            }
-        })
-
-        return view
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Profile.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Profile().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+                    // Set the retrieved profile data to the corresponding EditText fields
+                    view.findViewById<EditText>(R.id.emailEditText).setText(email)
+                    view.findViewById<EditText>(R.id.firstNameEditText).setText(firstName)
+                    view.findViewById<EditText>(R.id.lastNameEditText).setText(lastName)
+                    view.findViewById<EditText>(R.id.phoneNumberEditText).setText(phoneNumber)
                 }
             }
+            .addOnFailureListener { exception ->
+                // Error occurred while retrieving profile data
+                Log.e(TAG, "Error retrieving profile data: ${exception.message}")
+            }
+
+        // Get a reference to the Save button
+        val saveButton = view.findViewById<Button>(R.id.saveButton)
+
+        // Set a click listener on the Save button
+        saveButton.setOnClickListener {
+            // Get the updated values from the TextView fields
+            val email = view.findViewById<TextView>(R.id.emailEditText).text.toString()
+            val firstName = view.findViewById<TextView>(R.id.firstNameEditText).text.toString()
+            val lastName = view.findViewById<TextView>(R.id.lastNameEditText).text.toString()
+            val phoneNumber = view.findViewById<TextView>(R.id.phoneNumberEditText).text.toString()
+
+            // Find the user document with the matching email
+            val userQuery = db.collection("users").whereEqualTo("email", email)
+            userQuery.get().addOnSuccessListener { documents ->
+                // There should only be one document matching the query
+                if (documents.size() == 1) {
+                    val userDoc = documents.documents[0]
+                    // Update the existing user document with the new field values
+                    userDoc.reference.update("firstName", firstName)
+                    userDoc.reference.update("lastName", lastName)
+                    userDoc.reference.update("phoneNumber", phoneNumber)
+                } else {
+                    // Handle the case where no user document was found or multiple documents were found
+                }
+            }
+        }
+        return view
     }
 }
