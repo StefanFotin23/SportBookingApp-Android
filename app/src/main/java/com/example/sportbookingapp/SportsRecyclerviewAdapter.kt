@@ -1,7 +1,9 @@
 package com.example.sportbookingapp
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +11,14 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.sportbookingapp.backend_classes.SportField
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 
-class SportsRecyclerviewAdapter(private val sportsList: ArrayList<Sports>):
+class SportsRecyclerviewAdapter(private val sportsFieldsList: ArrayList<SportField>):
     RecyclerView.Adapter<SportsRecyclerviewAdapter.SportsRecyclerviewViewHolder>() {
 
+    private var itemClickListener: OnItemClickListener? = null
     private var selectedPosition = -1 // no image is selected
 
     fun getSelectedPosition(): Int {
@@ -34,9 +40,20 @@ class SportsRecyclerviewAdapter(private val sportsList: ArrayList<Sports>):
 
     override fun onBindViewHolder(holder: SportsRecyclerviewViewHolder,
                                   @SuppressLint("RecyclerView") position: Int) {
-        val currentItem = sportsList[position]
-        holder.sportImage.setImageResource(currentItem.sportImage)
-        holder.sportName.text = currentItem.sportName
+        val currentItem = sportsFieldsList[position]
+        Picasso.get()
+            .load(currentItem.getImageUrl())
+
+            .error(R.drawable.sports_field_background) // Replace with your error placeholder image
+            .into(holder.sportImage, object : Callback {
+                override fun onSuccess() {
+                    // Image loaded successfully
+                }
+                override fun onError(e: Exception?) {
+                    Log.e(TAG, "Error loading image from URL: ${currentItem.getImageUrl()}", e)
+                }
+            })
+        holder.sportName.text = currentItem.getSportCategory()
 
         if (position == selectedPosition) {
             holder.itemView.findViewById<RelativeLayout>(R.id.sportsRecyclerviewLayout)
@@ -56,11 +73,20 @@ class SportsRecyclerviewAdapter(private val sportsList: ArrayList<Sports>):
                 selectedPosition = position
                 notifyItemChanged(selectedPosition)
             }
+            itemClickListener?.onItemClick(position)
         }
     }
 
     override fun getItemCount(): Int {
-        return sportsList.size
+        return sportsFieldsList.size
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(position: Int)
+    }
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        itemClickListener = listener
     }
 
     class SportsRecyclerviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

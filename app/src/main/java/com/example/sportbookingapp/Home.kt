@@ -1,7 +1,13 @@
 package com.example.sportbookingapp
 
+import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Typeface
+import android.opengl.Visibility
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,8 +15,19 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.sportbookingapp.backend_classes.SportField
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.abs
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,12 +44,16 @@ class Home : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    //Firebase
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var uid: String
+    private lateinit var db: FirebaseFirestore
+
     // RecyclerView
     private lateinit var adapter: SportsRecyclerviewAdapter
     private lateinit var recyclerView: RecyclerView
-    private lateinit var sportsArrayList: ArrayList<Sports>
-    lateinit var imageId: Array<Int>
-    lateinit var sportName: Array<String>
+    private val sportFields: ArrayList<SportField> = ArrayList()
+    private var fieldPosition = -1
 
     // CalendarView
     private lateinit var calendarView: CalendarView
@@ -43,10 +64,11 @@ class Home : Fragment() {
     private lateinit var startingHourSpinner: Spinner
     private lateinit var endingHourSpinner: Spinner
     private lateinit var endingHourText: TextView
+    private lateinit var startingHourText: TextView
 
     // Lists that populate the choices in the SpinnerView
-    private lateinit var availableStartingHoursList: List<String>
-    private lateinit var availableEndingHoursList: List<String>
+    private var availableStartingHoursList = ArrayList<String>()
+    private var availableEndingHoursList = ArrayList<String>()
 
     private var startingHour = 0
     private var endingHour = 0
@@ -56,6 +78,7 @@ class Home : Fragment() {
     val hint = "Select an hour"
 
     private lateinit var priceTextView: TextView
+    private lateinit var makeReservationButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +86,8 @@ class Home : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        availableStartingHoursList.add(hint)
+        availableEndingHoursList.add(hint)
     }
 
     override fun onCreateView(
@@ -93,16 +118,51 @@ class Home : Fragment() {
             }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
         val sharedPref = requireActivity()
             .getSharedPreferences("HomeFragment", Context.MODE_PRIVATE)
         adapter.setSelectedPosition(sharedPref.getInt("selectedPosition", -1))
+        // fetch data from firebase
+        fetchDataFromDB()
+        if (fieldPosition != -1) {
+            startingReservationHoursInit()
+        }
 
-        // SpinnerView - Starting & Ending hour
-        updateAvailableReservationHours()
-        startingReservationHoursInit(availableStartingHoursList)
-        //endingReservationHoursInit(availableEndingHoursList)
+        // Make Reservations data upload to Firebase
+        makeReservationButton.setOnClickListener {
+            // Send the request to Firebase
+            val emailPreferences =
+                requireActivity().getSharedPreferences("userEmail", Context.MODE_PRIVATE)
+            val email = emailPreferences.getString("userEmail", "guest")
+
+            val reservation = hashMapOf(
+                "startingHour" to startingHour,
+                "endingHour" to endingHour,
+                "field_id" to sportFields[adapter.getSelectedPosition()].getId(),
+                "date" to selectedDate,
+                "booker" to email,
+                "price" to totalPrice,
+                "status" to "pending"
+            )
+
+            db.collection("reservations")
+                .add(reservation)
+                .addOnSuccessListener { documentReference ->
+                    // Reservation added successfully
+                    val reservationId = documentReference.id
+                    Toast.makeText(context, "RequestData added successfully", Toast.LENGTH_LONG)
+                        .show()
+                    priceTextView.visibility = View.INVISIBLE
+                    makeReservationButton.visibility = View.INVISIBLE
+                    startingReservationHoursInit()
+                }
+                .addOnFailureListener { exception ->
+                    // Error occurred while adding user
+                    Log.e(TAG, "Error adding reservationData to Firestore", exception)
+                }
+        }
     }
 
     override fun onPause() {
@@ -118,13 +178,24 @@ class Home : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dataInit()
+        // Firebase sync and data init
+        firebaseAuth = FirebaseAuth.getInstance()
+        uid = firebaseAuth.currentUser?.uid.toString()
+        db = Firebase.firestore
+
+        // Recyclerview
         val layoutManager = LinearLayoutManager(context)
         layoutManager.orientation = LinearLayoutManager.HORIZONTAL
         recyclerView = view.findViewById(R.id.sportsRecyclerView)
         recyclerView.layoutManager = layoutManager
         recyclerView.setHasFixedSize(true)
-        adapter = SportsRecyclerviewAdapter(sportsArrayList)
+        adapter = SportsRecyclerviewAdapter(sportFields)
+        adapter.setOnItemClickListener(object : SportsRecyclerviewAdapter.OnItemClickListener {
+            override fun onItemClick(position: Int) {
+                priceTextView.visibility = View.INVISIBLE
+                startingReservationHoursInit() // it resets the spinner's view
+            }
+        })
         recyclerView.adapter = adapter
 
         // Initialize CalendarView
@@ -145,7 +216,6 @@ class Home : Fragment() {
         calendarView.maxDate = maxDate.timeInMillis
         // init the selectedDate by default
         selectedDate = Date(calendarView.minDate)
-
         // Set a listener to handle when the selected date changes
         calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             // Do something with the selected date
@@ -157,23 +227,31 @@ class Home : Fragment() {
         startingHourSpinner = view.findViewById(R.id.startingHourSpinner)
         endingHourSpinner = view.findViewById(R.id.endingHourSpinner)
         endingHourText = view.findViewById(R.id.endingHourTextView)
+        startingHourText = view.findViewById(R.id.startingHourTextView)
         priceTextView = view.findViewById(R.id.priceText)
+
+        // Make Reservation Button
+        makeReservationButton = view.findViewById(R.id.confirm_reservation_button)
     }
 
-    private fun updateAvailableReservationHours() {
-        availableStartingHoursList = listOf("1", "2", "3", "4")
-        availableEndingHoursList = listOf("5", "6", "7", "8")
-    }
+    private fun startingReservationHoursInit() {
+        // Show the description of the selected field
+        var fieldDescription = "Selected field description:\n"
+        fieldDescription += sportFields[adapter.getSelectedPosition()].getDescription()
+        priceTextView.setTextColor(Color.parseColor("#66F9B0"))
+        priceTextView.setTypeface(null, Typeface.BOLD);
+        priceTextView.text = fieldDescription
+        priceTextView.visibility = View.VISIBLE
 
-    private fun startingReservationHoursInit(availableStartingHoursList: List<String>) {
         // Add a hint or prompt to the availableStartingHoursList
-        val dataWithHint = listOf(hint) + availableStartingHoursList
         val startingHourAdapter = ArrayAdapter(
             requireContext(), android.R.layout.simple_spinner_dropdown_item,
-            dataWithHint
+            availableStartingHoursList
         )
         startingHourAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         startingHourSpinner.adapter = startingHourAdapter
+        startingHourSpinner.visibility = View.VISIBLE
+        startingHourText.visibility = View.VISIBLE
 
         // onItemSelected Listener
         startingHourSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -186,13 +264,14 @@ class Home : Fragment() {
                 val selectedItem = parent.getItemAtPosition(position)
                 if (selectedItem is String && selectedItem != hint) {
                     startingHour = selectedItem.toInt()
-                    endingReservationHoursInit(availableEndingHoursList)
+                    endingReservationHoursInit()
                 } else if (selectedItem is String && selectedItem == hint) {
                     endingHourSpinner.visibility = View.INVISIBLE
                     endingHourText.visibility = View.INVISIBLE
                     startingHour = -1
                 }
             }
+
             override fun onNothingSelected(parent: AdapterView<*>) {
                 endingHourSpinner.visibility = View.INVISIBLE
                 endingHourText.visibility = View.INVISIBLE
@@ -200,13 +279,10 @@ class Home : Fragment() {
         }
     }
 
-    private fun endingReservationHoursInit(
-        availableEndingHoursList: List<String>
-    ) {
-        val dataWithHint = listOf(hint) + availableEndingHoursList
+    private fun endingReservationHoursInit() {
         val endingHourAdapter = ArrayAdapter(
             requireContext(), android.R.layout.simple_spinner_dropdown_item,
-            dataWithHint
+            availableEndingHoursList
         )
         endingHourAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         endingHourSpinner.adapter = endingHourAdapter
@@ -224,15 +300,21 @@ class Home : Fragment() {
                 val selectedItem = parent.getItemAtPosition(position)
                 if (selectedItem is String && selectedItem != hint) {
                     endingHour = selectedItem.toInt()
-                    totalPrice = calculateTotalPrice(50)
+                    fieldPosition = adapter.getSelectedPosition()
+                    if (fieldPosition != -1) {
+                        totalPrice = calculateTotalPrice(sportFields[fieldPosition].getPrice())
+                    }
                     val priceString = getString(R.string.price_text, totalPrice.toString())
                     priceTextView.text = priceString
                     priceTextView.visibility = View.VISIBLE
+                    makeReservationButton.visibility = View.VISIBLE
                 } else if (selectedItem is String && selectedItem == hint) {
                     endingHour = -1
                     priceTextView.visibility = View.INVISIBLE
+                    makeReservationButton.visibility = View.INVISIBLE
                 }
             }
+
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Do nothing
             }
@@ -240,27 +322,58 @@ class Home : Fragment() {
     }
 
     private fun calculateTotalPrice(price: Int): Int {
-        return price * (endingHour - startingHour)
+        return price * abs(endingHour - startingHour)
     }
 
-    private fun dataInit() {
-        sportsArrayList = arrayListOf()
-        imageId = arrayOf(
-            R.drawable.soccer_field,
-            R.drawable.basketball_field,
-            R.drawable.tennis_field,
-            R.drawable.volleyball_field
-        )
-        sportName = arrayOf(
-            getString(R.string.football),
-            getString(R.string.basketball),
-            getString(R.string.tennis),
-            getString(R.string.volleyball)
-        )
-
-        for (i in imageId.indices) {
-            val sport = Sports(imageId[i], sportName[i])
-            sportsArrayList.add(sport)
+    @OptIn(DelicateCoroutinesApi::class)
+    fun fetchDataFromDB() {
+        GlobalScope.launch(Dispatchers.IO) {
+            fetchSportFieldsFromDB()
         }
+        GlobalScope.launch(Dispatchers.IO) {
+            fetchAvailableReservationHours()
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun fetchSportFieldsFromDB() {
+        db.collection("fields")
+            .get()
+            .addOnSuccessListener { result ->
+                Log.d("fetch", "FETCH_RESULT : " + result.documents + "\n")
+                for (document in result.documents) {
+                    val id = document.id
+                    val name = document.getString("name")
+                    val imageUrl = document.getString("imageUrl")
+                    val sportCategory = document.getString("sportCategory")
+                    val price = document.getString("price").toString().toInt()
+                    val description = document.getString("description")
+
+                    if (name != null && imageUrl != null && sportCategory != null && description != null) {
+                        val sportField =
+                            SportField(id, name, imageUrl, sportCategory, price, description)
+                        sportFields.add(sportField)
+                    }
+                }
+                adapter.notifyDataSetChanged()
+            }
+            .addOnFailureListener { exception ->
+                Log.d("fetch", "Error getting sport fields data from Firestore.", exception)
+            }
+    }
+
+    private fun fetchAvailableReservationHours() {
+        val start = ArrayList<String>()
+        val end = ArrayList<String>()
+
+        //hardcoded variant
+        for (i in 8..22) {
+            start.add(i.toString())
+            end.add(i.toString())
+        }
+
+        // update the hours for spinners
+        availableStartingHoursList += start
+        availableEndingHoursList += end
     }
 }

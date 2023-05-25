@@ -26,6 +26,10 @@ class MainActivity : AppCompatActivity() {
         replaceFragment(Home())
 
         val uid = intent.getStringExtra("uid")
+        val userEmail = intent.getStringExtra("email")
+        val sharedPrefEditor = getSharedPreferences("userEmail", Context.MODE_PRIVATE).edit()
+        sharedPrefEditor.putString("userEmail", userEmail)
+        sharedPrefEditor.commit()
         val sharedPreference = getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE)
         val editor = sharedPreference.edit()
         editor.putString("username", intent.getStringExtra("email"))
