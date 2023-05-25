@@ -155,6 +155,7 @@ class Home : Fragment() {
                     Toast.makeText(context, "RequestData added successfully", Toast.LENGTH_LONG)
                         .show()
                     priceTextView.visibility = View.INVISIBLE
+                    makeReservationButton.visibility = View.INVISIBLE
                     startingReservationHoursInit()
                 }
                 .addOnFailureListener { exception ->
