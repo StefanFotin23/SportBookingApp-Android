@@ -34,4 +34,8 @@
     <string name="ending_hour">Ending hour</string>
     <string name="total_price">Total price: </string>
     <string name="price_text">Price: %1$s lei</string>
+    <string name="make_reservation">Make Reservation</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="welcome_to_ball_arena">Welcome to \nBall Arena!</string>
 </resources>

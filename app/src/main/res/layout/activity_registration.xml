@@ -57,24 +57,24 @@
         android:textSize="24sp"/>
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/userNameTextInput"
+        android:id="@+id/firstNameTextInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:background="@android:color/white"
-        android:hint="@string/username"
+        android:hint="@string/first_name"
         android:minHeight="48dp"
         android:textColor="@color/black"
         android:textColorHint="@color/black"
         android:textSize="24sp"/>
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/fullNameTextInput"
+        android:id="@+id/lastNameTextInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:background="@android:color/white"
-        android:hint="@string/full_name"
+        android:hint="@string/last_name"
         android:minHeight="48dp"
         android:textColor="@color/black"
         android:textColorHint="@color/black"
