@@ -43,6 +43,7 @@ class SportsRecyclerviewAdapter(private val sportsFieldsList: ArrayList<SportFie
         val currentItem = sportsFieldsList[position]
         Picasso.get()
             .load(currentItem.getImageUrl())
+
             .error(R.drawable.sports_field_background) // Replace with your error placeholder image
             .into(holder.sportImage, object : Callback {
                 override fun onSuccess() {
