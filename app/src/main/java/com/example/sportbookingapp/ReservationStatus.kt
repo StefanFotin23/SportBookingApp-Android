@@ -78,7 +78,8 @@ class ReservationStatus : Fragment() {
                                     fieldId,
                                     price,
                                     startingHour,
-                                    status
+                                    status,
+                                    adapter
                                 )
                                 newArrayList.add(reservation)
                             }

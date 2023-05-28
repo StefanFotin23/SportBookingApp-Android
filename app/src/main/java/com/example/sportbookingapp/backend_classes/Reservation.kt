@@ -1,17 +1,21 @@
 package com.example.sportbookingapp.backend_classes
 
+import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.util.Log
+import com.example.sportbookingapp.ReservationStatusAdapter
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
+@SuppressLint("NotifyDataSetChanged")
 class Reservation(
     private var date: String,
     private var endingHour: Int,
     private var fieldId: String,
     private var price: Long,
     private var startingHour: Int,
-    private var status: String = ""
+    private var status: String = "",
+    private var adapter: ReservationStatusAdapter
 ) {
     private var sportField: SportField? = null
 
@@ -37,6 +41,7 @@ class Reservation(
                         }
                     }
                 }
+                adapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->
                 Log.d(TAG, "", exception)
