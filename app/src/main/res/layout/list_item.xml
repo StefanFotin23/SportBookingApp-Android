@@ -19,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/soccer_field"/>
-    <!--        app:shapeAppearanceOverlay="@style/RoundCorner"/>-->
+<!--        app:shapeAppearanceOverlay="@style/RoundCorner"/>-->
 
     <TextView
         android:id="@+id/tvHeading"
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/black"
         android:text="Reservation"
-        android:textSize="16sp"
+        android:textSize="16dp"
         android:textStyle="bold"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="32dp"
@@ -59,8 +59,7 @@
         android:layout_marginEnd="16dp"
         android:text="Date:"
         android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:textSize="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/title_image"
@@ -133,7 +132,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/title_image"
-        app:layout_constraintTop_toBottomOf="@id/tvStartingHour" />
+        app:layout_constraintTop_toBottomOf="@id/tvEndingHour" />
 
     <TextView
         android:id="@+id/tvPrice"
@@ -150,7 +149,6 @@
         app:layout_constraintTop_toBottomOf="@id/tvEndingHour" />
 
     <TextView
-        android:id="@+id/tvPrice"
         android:layout_width="77dp"
         android:layout_height="26dp"
         android:layout_marginStart="16dp"
@@ -200,8 +198,7 @@
         android:layout_marginEnd="16dp"
         android:textColor="@color/black"
         android:text="Status:"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:textSize="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/title_image"
