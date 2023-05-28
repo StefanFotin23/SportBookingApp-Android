@@ -16,10 +16,13 @@
         android:layout_height="80dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/RoundShape"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/soccer_field"/>
+
     <!--        app:shapeAppearanceOverlay="@style/RoundCorner"/>-->
+
 
     <TextView
         android:id="@+id/tvHeading"
@@ -27,7 +30,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/black"
         android:text="Reservation"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="32dp"
@@ -44,7 +47,8 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:textColor="@color/black"
-        android:textSize="14dp"
+        android:textSize="23dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.851"
         app:layout_constraintStart_toEndOf="@+id/title_image"
@@ -59,7 +63,7 @@
         android:layout_marginEnd="16dp"
         android:text="Date:"
         android:textColor="@color/black"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -74,7 +78,7 @@
         android:layout_marginEnd="16dp"
         android:text="Start Hour:"
         android:textColor="@color/black"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -89,7 +93,8 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:textColor="@color/black"
-        android:textSize="14dp"
+        android:textSize="23dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.911"
         app:layout_constraintStart_toEndOf="@+id/title_image"
@@ -103,7 +108,7 @@
         android:layout_marginEnd="16dp"
         android:text="End Hour:"
         android:textColor="@color/black"
-        android:textSize="16sp"
+        android:textSize="20dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -118,7 +123,8 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:textColor="@color/black"
-        android:textSize="14dp"
+        android:textSize="23dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.904"
         app:layout_constraintStart_toEndOf="@+id/title_image"
@@ -131,7 +137,7 @@
         android:layout_marginEnd="16dp"
         android:text="Price:"
         android:textColor="@color/black"
-        android:textSize="16sp"
+        android:textSize="20dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -146,40 +152,12 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:textColor="@color/black"
-        android:textSize="14dp"
+        android:textSize="23dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.803"
         app:layout_constraintStart_toEndOf="@+id/title_image"
         app:layout_constraintTop_toBottomOf="@id/tvEndingHour" />
-
-    <TextView
-        android:layout_width="77dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:text="Field Id:"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/title_image"
-        app:layout_constraintTop_toBottomOf="@id/tvPrice" />
-
-    <TextView
-        android:id="@+id/tvFieldId"
-        android:layout_width="156dp"
-        android:layout_height="33dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:textColor="@color/black"
-        android:textSize="14dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.798"
-        app:layout_constraintStart_toEndOf="@+id/title_image"
-        app:layout_constraintTop_toBottomOf="@id/tvPrice" />
 
     <TextView
         android:id="@+id/tvStatus"
@@ -189,12 +167,12 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:textColor="@color/black"
-        android:textSize="18dp"
+        android:textSize="23dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.816"
         app:layout_constraintStart_toEndOf="@+id/title_image"
-        app:layout_constraintTop_toBottomOf="@id/tvFieldId" />
+        app:layout_constraintTop_toBottomOf="@id/tvPrice" />
 
     <TextView
         android:layout_width="77dp"
@@ -204,12 +182,12 @@
         android:layout_marginEnd="16dp"
         android:textColor="@color/black"
         android:text="Status:"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/title_image"
-        app:layout_constraintTop_toBottomOf="@id/tvFieldId" />
+        app:layout_constraintTop_toBottomOf="@id/tvPrice" />
 
     <View
         android:layout_width="match_parent"

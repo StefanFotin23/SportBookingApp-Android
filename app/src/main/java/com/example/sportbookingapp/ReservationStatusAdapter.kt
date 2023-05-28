@@ -34,7 +34,7 @@ class ReservationStatusAdapter(private val reservationList: ArrayList<Reservatio
 
         holder.date.text = currentItem.getDate()
         holder.endingHour.text = currentItem.getEndingHour().toString()
-        holder.fieldId.text = currentItem.getFieldId()
+     //   holder.fieldId.text = currentItem.getFieldId()
         holder.price.text = "${currentItem.getPrice()} lei"
         holder.startingHour.text = currentItem.getStartingHour().toString()
         holder.status.text = currentItem.getStatus()
@@ -91,7 +91,7 @@ class ReservationStatusAdapter(private val reservationList: ArrayList<Reservatio
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val date: TextView = itemView.findViewById(R.id.tvDate)
         val endingHour: TextView = itemView.findViewById(R.id.tvEndingHour)
-        val fieldId: TextView = itemView.findViewById(R.id.tvFieldId)
+     //   val fieldId: TextView = itemView.findViewById(R.id.tvFieldId)
         val price: TextView = itemView.findViewById(R.id.tvPrice)
         val startingHour: TextView = itemView.findViewById(R.id.tvStartingHour)
         val status: TextView = itemView.findViewById(R.id.tvStatus)
