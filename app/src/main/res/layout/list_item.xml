@@ -74,8 +74,7 @@
         android:layout_marginEnd="16dp"
         android:text="Start Hour:"
         android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:textSize="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/title_image"
@@ -103,8 +102,7 @@
         android:layout_marginEnd="16dp"
         android:text="End Hour:"
         android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:textSize="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/title_image"
@@ -131,12 +129,11 @@
         android:layout_marginEnd="16dp"
         android:text="Price:"
         android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:textSize="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/title_image"
-        app:layout_constraintTop_toBottomOf="@id/tvEndingHour" />
+        app:layout_constraintTop_toBottomOf="@id/tvStartingHour" />
 
     <TextView
         android:id="@+id/tvPrice"
@@ -153,14 +150,14 @@
         app:layout_constraintTop_toBottomOf="@id/tvEndingHour" />
 
     <TextView
+        android:id="@+id/tvPrice"
         android:layout_width="77dp"
         android:layout_height="26dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:textSize="14dp"
         android:text="Field Id:"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -189,8 +186,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:textColor="@color/black"
-        android:textSize="18dp"
-        android:textStyle="bold"
+        android:textSize="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.816"
         app:layout_constraintStart_toEndOf="@+id/title_image"
@@ -216,5 +212,5 @@
         android:layout_height="1dp"
         android:background="#FF000000"
         app:layout_constraintBottom_toBottomOf="parent" />
-    <!--        app:layout_constraintTop_toBottomOf="@id/tvStatus" :background="@color/underline"/>-->
+<!--        app:layout_constraintTop_toBottomOf="@id/tvStatus" :background="@color/underline"/>-->
 </androidx.constraintlayout.widget.ConstraintLayout>
