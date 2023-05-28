@@ -34,17 +34,16 @@ class ReservationStatusAdapter(private val reservationList: ArrayList<Reservatio
 
         holder.date.text = currentItem.getDate()
         holder.endingHour.text = currentItem.getEndingHour().toString()
-     //   holder.fieldId.text = currentItem.getFieldId()
         holder.price.text = "${currentItem.getPrice()} lei"
         holder.startingHour.text = currentItem.getStartingHour().toString()
         holder.status.text = currentItem.getStatus()
         holder.sportCategory.text = currentItem.getSportField()?.getSportCategory() ?: "Reservation"
         if (currentItem.getStatus() == "cancelled") {
-            holder.status.setTextColor(Color.RED)
+            holder.status.setTextColor(Color.parseColor("#E0115F"))
         } else if (currentItem.getStatus() == "pending") {
             holder.status.setTextColor(Color.parseColor("#FFA500"))
         } else if (currentItem.getStatus() == "active") {
-            holder.status.setTextColor(Color.parseColor("#66F9B0"))
+            holder.status.setTextColor(Color.parseColor("#008066"))
         }
 
         if (currentItem.getSportField() == null) {
@@ -91,7 +90,6 @@ class ReservationStatusAdapter(private val reservationList: ArrayList<Reservatio
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val date: TextView = itemView.findViewById(R.id.tvDate)
         val endingHour: TextView = itemView.findViewById(R.id.tvEndingHour)
-     //   val fieldId: TextView = itemView.findViewById(R.id.tvFieldId)
         val price: TextView = itemView.findViewById(R.id.tvPrice)
         val startingHour: TextView = itemView.findViewById(R.id.tvStartingHour)
         val status: TextView = itemView.findViewById(R.id.tvStatus)
