@@ -1,5 +1,6 @@
 package com.example.sportbookingapp
 
+import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
@@ -9,19 +10,30 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.example.sportbookingapp.backend_classes.SportField
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import java.lang.Exception
 
 class Login : AppCompatActivity() {
+    private var backgroundImage: ImageView? = null
+    private var backgroundImageUrl: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        getBackgroundImageUrl()
         onResume()
     }
 
     override fun onResume() {
         super.onResume()
+        backgroundImage = findViewById(R.id.backgroundImageView)
+
         val passwordTextInputEditText =
             findViewById<TextInputEditText>(R.id.loginPasswordTextInput)
         passwordTextInputEditText.inputType =
@@ -115,5 +127,34 @@ class Login : AppCompatActivity() {
                     }
                 }
         }
+    }
+
+    private fun getBackgroundImageUrl() {
+        Firebase.firestore.collection("backgroundImage")
+            .get()
+            .addOnSuccessListener { result ->
+                backgroundImageUrl = result.documents[0].getString("imageUrl")
+            }
+            .addOnCompleteListener {
+                updateBackgroundImage()
+            }
+    }
+
+    private fun updateBackgroundImage() {
+        Picasso.get()
+            .load(backgroundImageUrl)
+            .error(R.drawable.sports_field_background) // Replace with your error placeholder image
+            .into(backgroundImage, object : Callback {
+                override fun onSuccess() {
+                    // Image loaded successfully
+                }
+                override fun onError(e: Exception?) {
+                    Log.e(
+                        "BackgroundImageError",
+                        "Error loading image from URL: $backgroundImageUrl",
+                        e
+                    )
+                }
+            })
     }
 }

@@ -5,7 +5,6 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -16,7 +15,6 @@ import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sportbookingapp.backend_classes.SportField
-import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -136,8 +134,21 @@ class Home : Fragment() {
                 requireActivity().getSharedPreferences("userEmail", Context.MODE_PRIVATE)
             val email = emailPreferences.getString("userEmail", "guest")
 
-            val startingHour = startingHour
-            val endingHour = endingHour
+            val startingH: Int
+            val endingH: Int
+
+            if (startingHour == endingHour) {
+                Toast.makeText(context, "Can't book a null reservation", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
+            if (startingHour < endingHour) {
+                startingH = startingHour
+                endingH = endingHour
+            } else {
+                endingH = startingHour
+                startingH = endingHour
+            }
             val selectedField = sportFields[adapter.getSelectedPosition()]
 
             // Check if the selected field has any reservations
@@ -152,18 +163,25 @@ class Home : Fragment() {
 
                         // Check if the reservation interval overlaps with the desired reservation
                         if (reservationStartingHour != null && reservationEndingHour != null) {
-                            if (startingHour >= reservationStartingHour && startingHour <= reservationEndingHour) {
-                                // The start hour of the desired reservation overlaps with an existing reservation
-                                val overlappingInterval = "$reservationStartingHour - $reservationEndingHour"
-                                val message = "The start hour is unavailable. Overlaps with reservation from $overlappingInterval."
-                                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-                                return@addOnSuccessListener
+                            val start: Long
+                            val end: Long
+                            if (reservationStartingHour < reservationEndingHour) {
+                                start = reservationStartingHour
+                                end = reservationEndingHour
+                            } else {
+                                end = reservationStartingHour
+                                start = reservationEndingHour
                             }
-
-                            if (endingHour >= reservationStartingHour && endingHour <= reservationEndingHour) {
-                                // The end hour of the desired reservation overlaps with an existing reservation
-                                val overlappingInterval = "$reservationStartingHour - $reservationEndingHour"
-                                val message = "The end hour is unavailable. Overlaps with reservation from $overlappingInterval."
+                            // If the new Reservation overlaps with other reservation,
+                            // we will block it
+                            if (!reservationAvailable(startingH, endingH, start, end)) {
+                                val overlappingInterval =
+                                    if (reservationStartingHour < reservationEndingHour) {
+                                        "$reservationStartingHour - $reservationEndingHour"
+                                    } else {
+                                        "$reservationEndingHour - $reservationStartingHour"
+                                    }
+                                val message = "Interval $overlappingInterval already booked."
                                 Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                                 return@addOnSuccessListener
                             }
@@ -186,7 +204,11 @@ class Home : Fragment() {
                         .addOnSuccessListener { documentReference ->
                             // Reservation added successfully
                             val reservationId = documentReference.id
-                            Toast.makeText(context, "Reservation added successfully", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                context,
+                                "Reservation added successfully",
+                                Toast.LENGTH_LONG
+                            ).show()
                             priceTextView.visibility = View.INVISIBLE
                             makeReservationButton.visibility = View.INVISIBLE
                             startingReservationHoursInit()
@@ -202,6 +224,21 @@ class Home : Fragment() {
                 }
         }
 
+    }
+
+    private fun reservationAvailable(
+        startingHour: Int,
+        endingHour: Int,
+        start: Long,
+        end: Long
+    ): Boolean {
+        if (endingHour <= start) {
+            return true
+        }
+        if (startingHour >= end) {
+            return true
+        }
+        return false
     }
 
     override fun onPause() {
@@ -385,8 +422,12 @@ class Home : Fragment() {
                     val name = document.getString("name")
                     val imageUrl = document.getString("imageUrl")
                     val sportCategory = document.getString("sportCategory")
-                    val price = document.getString("price").toString().toInt()
                     val description = document.getString("description")
+                    val price = try {
+                        document.getString("price").toString().toInt()
+                    } catch (e: Exception) {
+                        document.getLong("price").toString().toInt()
+                    }
 
                     if (name != null && imageUrl != null && sportCategory != null && description != null) {
                         val sportField =

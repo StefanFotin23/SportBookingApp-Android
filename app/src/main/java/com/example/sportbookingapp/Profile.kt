@@ -46,8 +46,7 @@ class Profile : Fragment() {
         logoutTextView.setOnClickListener {
             FirebaseAuth.getInstance().signOut() // clear the user session
             val loginIntent = Intent(context, Login::class.java)
-            startActivity(loginIntent) // redirect the user to the login page
-            // finish() // close the current activity
+            startActivity(loginIntent)
         }
 
         val fullNameTextView = view.findViewById<TextView>(R.id.fullNameTextView)

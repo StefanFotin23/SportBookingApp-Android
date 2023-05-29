@@ -8,23 +8,27 @@ import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
 import android.view.View
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.view.isVisible
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import java.lang.Exception
 import java.util.logging.Logger
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 
 class Registration : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
+    private var backgroundImage: ImageView? = null
+    private var backgroundImageUrl: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registration)
+        getBackgroundImageUrl()
         onResume()
     }
 
@@ -45,6 +49,7 @@ class Registration : AppCompatActivity() {
         val editTextFirstName = findViewById<TextInputEditText>(R.id.firstNameTextInput)
         val editTextLastName = findViewById<TextInputEditText>(R.id.lastNameTextInput)
         val editTextPhoneNumber = findViewById<TextInputEditText>(R.id.phoneNumberTextInput)
+        backgroundImage = findViewById(R.id.backgroundRegistrationImage)
 
         backButton.setOnClickListener {
             val loginActivity = Intent(this@Registration, Login::class.java)
@@ -185,5 +190,34 @@ class Registration : AppCompatActivity() {
                 // Error occurred while adding user
                 Log.e(TAG, "Error adding userData to Firestore", exception)
             }
+    }
+
+    private fun getBackgroundImageUrl() {
+        Firebase.firestore.collection("backgroundImage")
+            .get()
+            .addOnSuccessListener { result ->
+                backgroundImageUrl = result.documents[0].getString("imageUrl")
+            }
+            .addOnCompleteListener {
+                updateBackgroundImage()
+            }
+    }
+
+    private fun updateBackgroundImage() {
+        Picasso.get()
+            .load(backgroundImageUrl)
+            .error(R.drawable.sports_field_background) // Replace with your error placeholder image
+            .into(backgroundImage, object : Callback {
+                override fun onSuccess() {
+                    // Image loaded successfully
+                }
+                override fun onError(e: Exception?) {
+                    Log.e(
+                        "BackgroundImageError",
+                        "Error loading image from URL: $backgroundImageUrl",
+                        e
+                    )
+                }
+            })
     }
 }
