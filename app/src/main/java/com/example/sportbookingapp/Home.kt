@@ -154,12 +154,17 @@ class Home : Fragment() {
                         if (reservationStartingHour != null && reservationEndingHour != null) {
                             if (startingHour >= reservationStartingHour && startingHour <= reservationEndingHour) {
                                 // The start hour of the desired reservation overlaps with an existing reservation
-                                Toast.makeText(context, "The start hour is unavailable", Toast.LENGTH_LONG).show()
+                                val overlappingInterval = "$reservationStartingHour - $reservationEndingHour"
+                                val message = "The start hour is unavailable. Overlaps with reservation from $overlappingInterval."
+                                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                                 return@addOnSuccessListener
                             }
+
                             if (endingHour >= reservationStartingHour && endingHour <= reservationEndingHour) {
                                 // The end hour of the desired reservation overlaps with an existing reservation
-                                Toast.makeText(context, "The end hour is unavailable", Toast.LENGTH_LONG).show()
+                                val overlappingInterval = "$reservationStartingHour - $reservationEndingHour"
+                                val message = "The end hour is unavailable. Overlaps with reservation from $overlappingInterval."
+                                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                                 return@addOnSuccessListener
                             }
                         }
