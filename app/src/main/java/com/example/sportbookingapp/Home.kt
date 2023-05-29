@@ -132,37 +132,71 @@ class Home : Fragment() {
 
         // Make Reservations data upload to Firebase
         makeReservationButton.setOnClickListener {
-            // Send the request to Firebase
             val emailPreferences =
                 requireActivity().getSharedPreferences("userEmail", Context.MODE_PRIVATE)
             val email = emailPreferences.getString("userEmail", "guest")
 
-            val reservation = hashMapOf(
-                "startingHour" to startingHour,
-                "endingHour" to endingHour,
-                "field_id" to sportFields[adapter.getSelectedPosition()].getId(),
-                "date" to selectedDate,
-                "booker" to email,
-                "price" to totalPrice,
-                "status" to "pending"
-            )
+            val startingHour = startingHour
+            val endingHour = endingHour
+            val selectedField = sportFields[adapter.getSelectedPosition()]
 
+            // Check if the selected field has any reservations
             db.collection("reservations")
-                .add(reservation)
-                .addOnSuccessListener { documentReference ->
-                    // Reservation added successfully
-                    val reservationId = documentReference.id
-                    Toast.makeText(context, "RequestData added successfully", Toast.LENGTH_LONG)
-                        .show()
-                    priceTextView.visibility = View.INVISIBLE
-                    makeReservationButton.visibility = View.INVISIBLE
-                    startingReservationHoursInit()
+                .whereEqualTo("field_id", selectedField.getId())
+                .get()
+                .addOnSuccessListener { result ->
+                    // Iterate over each reservation
+                    for (document in result.documents) {
+                        val reservationStartingHour = document.getLong("startingHour")
+                        val reservationEndingHour = document.getLong("endingHour")
+
+                        // Check if the reservation interval overlaps with the desired reservation
+                        if (reservationStartingHour != null && reservationEndingHour != null) {
+                            if (startingHour >= reservationStartingHour && startingHour <= reservationEndingHour) {
+                                // The start hour of the desired reservation overlaps with an existing reservation
+                                Toast.makeText(context, "The start hour is unavailable", Toast.LENGTH_LONG).show()
+                                return@addOnSuccessListener
+                            }
+                            if (endingHour >= reservationStartingHour && endingHour <= reservationEndingHour) {
+                                // The end hour of the desired reservation overlaps with an existing reservation
+                                Toast.makeText(context, "The end hour is unavailable", Toast.LENGTH_LONG).show()
+                                return@addOnSuccessListener
+                            }
+                        }
+                    }
+
+                    // No overlapping reservations found, save the reservation to Firebase
+                    val reservation = hashMapOf(
+                        "startingHour" to startingHour,
+                        "endingHour" to endingHour,
+                        "field_id" to selectedField.getId(),
+                        "date" to selectedDate,
+                        "booker" to email,
+                        "price" to totalPrice,
+                        "status" to "pending"
+                    )
+
+                    db.collection("reservations")
+                        .add(reservation)
+                        .addOnSuccessListener { documentReference ->
+                            // Reservation added successfully
+                            val reservationId = documentReference.id
+                            Toast.makeText(context, "Reservation added successfully", Toast.LENGTH_LONG).show()
+                            priceTextView.visibility = View.INVISIBLE
+                            makeReservationButton.visibility = View.INVISIBLE
+                            startingReservationHoursInit()
+                        }
+                        .addOnFailureListener { exception ->
+                            // Error occurred while adding reservation
+                            Log.e(TAG, "Error adding reservation to Firestore", exception)
+                        }
                 }
                 .addOnFailureListener { exception ->
-                    // Error occurred while adding user
-                    Log.e(TAG, "Error adding reservationData to Firestore", exception)
+                    // Error occurred while fetching reservations
+                    Log.e(TAG, "Error fetching reservations from Firestore", exception)
                 }
         }
+
     }
 
     override fun onPause() {
