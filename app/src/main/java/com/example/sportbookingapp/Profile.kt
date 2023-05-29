@@ -42,6 +42,7 @@ class Profile : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
+
         val logoutTextView = view.findViewById<TextView>(R.id.logout_textView)
         logoutTextView.setOnClickListener {
             FirebaseAuth.getInstance().signOut() // clear the user session
