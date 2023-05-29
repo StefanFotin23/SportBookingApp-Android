@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/background_profile"
+    android:background="@drawable/gigel3"
     tools:context="ReservationStatus">
 
     <TextView
         android:id="@+id/reservationTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
+        android:textColor="#FFFFFFFF"
         android:textStyle="bold"
         android:textSize="30sp"
         android:layout_gravity="center"
@@ -22,7 +22,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:background="#FF000000"
+        android:background="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
