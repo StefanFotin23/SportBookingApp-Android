@@ -5,7 +5,6 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -16,7 +15,6 @@ import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sportbookingapp.backend_classes.SportField
-import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -136,13 +134,25 @@ class Home : Fragment() {
                 requireActivity().getSharedPreferences("userEmail", Context.MODE_PRIVATE)
             val email = emailPreferences.getString("userEmail", "guest")
 
-            val startingHour = startingHour
-            val endingHour = endingHour
+            val startingH: Int
+            val endingH: Int
+
+            if (startingHour == endingHour) {
+                Toast.makeText(context, "Can't book a null reservation", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
+            if (startingHour < endingHour) {
+                startingH = startingHour
+                endingH = endingHour
+            } else {
+                endingH = startingHour
+                startingH = endingHour
+            }
             val selectedField = sportFields[adapter.getSelectedPosition()]
 
             // Check if the selected field has any reservations
             db.collection("reservations")
-                .whereEqualTo("field_id", selectedField.getId())
                 .get()
                 .addOnSuccessListener { result ->
                     // Iterate over each reservation
@@ -151,19 +161,31 @@ class Home : Fragment() {
                         val reservationEndingHour = document.getLong("endingHour")
 
                         // Check if the reservation interval overlaps with the desired reservation
-                        if (reservationStartingHour != null && reservationEndingHour != null) {
-                            if (startingHour >= reservationStartingHour && startingHour <= reservationEndingHour) {
-                                // The start hour of the desired reservation overlaps with an existing reservation
-                                val overlappingInterval = "$reservationStartingHour - $reservationEndingHour"
-                                val message = "The start hour is unavailable. Overlaps with reservation from $overlappingInterval."
-                                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-                                return@addOnSuccessListener
+                        if (document.getString("field_id") == selectedField.getId() &&
+                                reservationStartingHour != null && reservationEndingHour != null) {
+                            val start: Long
+                            val end: Long
+                            if (reservationStartingHour < reservationEndingHour) {
+                                start = reservationStartingHour
+                                end = reservationEndingHour
+                            } else {
+                                end = reservationStartingHour
+                                start = reservationEndingHour
                             }
 
-                            if (endingHour >= reservationStartingHour && endingHour <= reservationEndingHour) {
-                                // The end hour of the desired reservation overlaps with an existing reservation
-                                val overlappingInterval = "$reservationStartingHour - $reservationEndingHour"
-                                val message = "The end hour is unavailable. Overlaps with reservation from $overlappingInterval."
+                            val reservationDate = document.getTimestamp("date")?.toDate()
+                            // If the new Reservation overlaps with other reservation,
+                            // we will block it
+                            if (!reservationAvailable(startingH, endingH, start, end) &&
+                                selectedDate == reservationDate
+                            ) {
+                                val overlappingInterval =
+                                    if (reservationStartingHour < reservationEndingHour) {
+                                        "$reservationStartingHour - $reservationEndingHour"
+                                    } else {
+                                        "$reservationEndingHour - $reservationStartingHour"
+                                    }
+                                val message = "Interval $overlappingInterval already booked."
                                 Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                                 return@addOnSuccessListener
                             }
@@ -186,7 +208,11 @@ class Home : Fragment() {
                         .addOnSuccessListener { documentReference ->
                             // Reservation added successfully
                             val reservationId = documentReference.id
-                            Toast.makeText(context, "Reservation added successfully", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                context,
+                                "Reservation added successfully",
+                                Toast.LENGTH_LONG
+                            ).show()
                             priceTextView.visibility = View.INVISIBLE
                             makeReservationButton.visibility = View.INVISIBLE
                             startingReservationHoursInit()
@@ -202,6 +228,21 @@ class Home : Fragment() {
                 }
         }
 
+    }
+
+    private fun reservationAvailable(
+        startingHour: Int,
+        endingHour: Int,
+        start: Long,
+        end: Long
+    ): Boolean {
+        if (endingHour <= start) {
+            return true
+        }
+        if (startingHour >= end) {
+            return true
+        }
+        return false
     }
 
     override fun onPause() {
@@ -385,8 +426,12 @@ class Home : Fragment() {
                     val name = document.getString("name")
                     val imageUrl = document.getString("imageUrl")
                     val sportCategory = document.getString("sportCategory")
-                    val price = document.getString("price").toString().toInt()
                     val description = document.getString("description")
+                    val price = try {
+                        document.getString("price").toString().toInt()
+                    } catch (e: Exception) {
+                        document.getLong("price").toString().toInt()
+                    }
 
                     if (name != null && imageUrl != null && sportCategory != null && description != null) {
                         val sportField =
@@ -405,14 +450,27 @@ class Home : Fragment() {
         val start = ArrayList<String>()
         val end = ArrayList<String>()
 
-        //hardcoded variant
-        for (i in 8..22) {
-            start.add(i.toString())
-            end.add(i.toString())
-        }
+        // default values
+        var x = 0
+        var y = 24
 
-        // update the hours for spinners
-        availableStartingHoursList += start
-        availableEndingHoursList += end
+        db.collection("open_hours")
+            .get()
+            .addOnSuccessListener { result ->
+                if (result.documents.size >= 1) {
+                    x = result.documents[0].getString("startingHour").toString().toInt()
+                    y = result.documents[0].getString("endingHour").toString().toInt()
+                }
+            }
+            .addOnCompleteListener {
+                for (i in x..y) {
+                    start.add(i.toString())
+                    end.add(i.toString())
+                }
+
+                // update the hours for spinners
+                availableStartingHoursList += start
+                availableEndingHoursList += end
+            }
     }
 }

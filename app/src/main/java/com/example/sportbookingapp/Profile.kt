@@ -42,31 +42,37 @@ class Profile : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
+        val sharedPreference =
+            requireActivity().getSharedPreferences("AuthenticatedUser", Context.MODE_PRIVATE)
+        val authenticatedEmail = sharedPreference.getString("email", "guest")
+
         val logoutTextView = view.findViewById<TextView>(R.id.logout_textView)
         logoutTextView.setOnClickListener {
             FirebaseAuth.getInstance().signOut() // clear the user session
             val loginIntent = Intent(context, Login::class.java)
-            startActivity(loginIntent) // redirect the user to the login page
-            // finish() // close the current activity
+            startActivity(loginIntent)
         }
 
         val fullNameTextView = view.findViewById<TextView>(R.id.fullNameTextView)
         db.collection("users")
             .get()
             .addOnSuccessListener { result ->
-                Log.d("fetch", "FETCH_RESULT : " + result.documents + "\n")
                 for (document in result.documents) {
                     val email = document.getString("email")
-                    val firstName = document.getString("firstName")
-                    val lastName = document.getString("lastName")
-                    val phoneNumber = document.getString("phoneNumber")
+                    Log.d("authUser", "Current (from DB fetch) user is $email\n")
+                    if (email == authenticatedEmail) {
+                        val firstName = document.getString("firstName")
+                        val lastName = document.getString("lastName")
+                        val phoneNumber = document.getString("phoneNumber")
 
-                    // Set the retrieved profile data to the corresponding EditText fields
-                    view.findViewById<TextView>(R.id.emailTextView).text = email
-                    view.findViewById<EditText>(R.id.firstNameEditText).setText(firstName)
-                    view.findViewById<EditText>(R.id.lastNameEditText).setText(lastName)
-                    view.findViewById<EditText>(R.id.phoneNumberEditText).setText(phoneNumber)
-                    fullNameTextView.text = "Welcome, $firstName $lastName!"
+                        // Set the retrieved profile data to the corresponding EditText fields
+                        view.findViewById<TextView>(R.id.emailTextView).text = email
+                        view.findViewById<EditText>(R.id.firstNameEditText).setText(firstName)
+                        view.findViewById<EditText>(R.id.lastNameEditText).setText(lastName)
+                        view.findViewById<EditText>(R.id.phoneNumberEditText).setText(phoneNumber)
+                        fullNameTextView.text = "Welcome, $firstName $lastName!"
+                        return@addOnSuccessListener
+                    }
                 }
             }
             .addOnFailureListener { exception ->
