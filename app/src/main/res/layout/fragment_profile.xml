@@ -169,12 +169,13 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/saveButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="320dp"
+        android:layout_height="19dp"
+        android:layout_marginTop="128dip"
         android:background="#FFFFFF"
         android:text="Save"
-        android:textStyle="bold"
-        android:layout_marginTop="128dip" />
+        android:textColor="#000000"
+        android:textStyle="bold" />
 </LinearLayout>
 
 
