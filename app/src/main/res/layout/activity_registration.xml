@@ -23,14 +23,13 @@
         android:textSize="20sp"/>
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/backgroundRegistrationImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:contentDescription="@string/sports_field_image"
         android:cropToPadding="true"
-        android:scaleType="fitXY"
-        app:srcCompat="@drawable/sports_field_background" />
+        android:scaleType="fitXY" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/loginEmailTextInput"

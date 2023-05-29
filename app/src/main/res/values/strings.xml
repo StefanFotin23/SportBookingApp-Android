@@ -39,4 +39,6 @@
     <string name="last_name">Last Name</string>
     <string name="welcome_to_ball_arena">Welcome to \nBall Arena!</string>
     <string name="reservations">Reservations</string>
+    <string name="save">Save</string>
+    <string name="welcome_guest">Welcome, Guest!</string>
 </resources>

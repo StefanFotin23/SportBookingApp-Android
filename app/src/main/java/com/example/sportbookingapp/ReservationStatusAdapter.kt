@@ -39,16 +39,16 @@ class ReservationStatusAdapter(private val reservationList: ArrayList<Reservatio
         holder.status.text = currentItem.getStatus()
         holder.sportCategory.text = currentItem.getSportField()?.getSportCategory() ?: "Reservation"
         if (currentItem.getStatus() == "cancelled") {
-            holder.status.setTextColor(Color.parseColor("#E0115F"))
+            holder.status.setTextColor(Color.parseColor("#FF0000"))
         } else if (currentItem.getStatus() == "pending") {
-            holder.status.setTextColor(Color.parseColor("#FFA500"))
+            holder.status.setTextColor(Color.parseColor("#FF8C00"))
         } else if (currentItem.getStatus() == "active") {
-            holder.status.setTextColor(Color.parseColor("#008066"))
+            holder.status.setTextColor(Color.parseColor("#008000"))
         }
 
         if (currentItem.getSportField() == null) {
             Picasso.get()
-                .load("https://www.google.com/url?sa=i&url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FFile%3ANo_image_available.svg&psig=AOvVaw39UB9uSha9F4bJIc_PBnAK&ust=1685375670563000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKjsjeOvmP8CFQAAAAAdAAAAABAE")
+                .load(R.drawable.sports_field_background)
                 .error(R.drawable.sports_field_background) // Replace with your error placeholder image
                 .into(holder.sportImage, object : Callback {
                     override fun onSuccess() {
